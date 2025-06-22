@@ -1,0 +1,31 @@
+{
+    "name": "miakiwi/kwlnk",
+    "description": "A PHP URL shortening app",
+    "type": "project",
+    "require": {
+        "miakiwi/kaphpir": "dev-main",
+        "catfan/medoo": "^2.2",
+        "monolog/monolog": "^3.9",
+        "pecee/simple-router": "^5.4",
+        "vlucas/phpdotenv": "^5.6",
+        "rakit/validation": "^1.4"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/MiaKiwi/kaphpir"
+        }
+    ],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Miakiwi\\Kwlnk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "mia.kiwi",
+            "email": "iwik.aim@mia.kiwi"
+        }
+    ]
+}

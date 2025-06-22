@@ -1,0 +1,9 @@
+{
+    "app.name": "Kwlnk",
+    "app.version": "25.0.0",
+    "kaphpir.settings": {
+        "response.metadata.response_id.enabled": false
+    },
+    "token.default_expiration_minutes": "60",
+    "account.id.regex": "^[a-zA-Z0-9_\\-]*$"
+}

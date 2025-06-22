@@ -1,0 +1,7 @@
+vendor/
+database/
+logs/
+
+.env
+config.json
+tests.ps1
