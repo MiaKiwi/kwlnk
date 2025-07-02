@@ -4,6 +4,7 @@ namespace Miakiwi\Kwlnk\App;
 
 use Medoo\Medoo;
 use Miakiwi\Kwlnk\Models\Account;
+use Miakiwi\Kwlnk\Models\Link;
 use Miakiwi\Kwlnk\Models\Token;
 
 
@@ -125,6 +126,50 @@ class Database
                 'NOT NULL'
             ],
             'created_by_id' => [
+                'VARCHAR',
+                'NOT NULL',
+                'REFERENCES ' . Account::table() . '(id) ON DELETE SET NULL ON UPDATE CASCADE'
+            ]
+        ]);
+
+
+
+        // Create the links table.
+        Logger::get()->debug("Creating table.", [
+            'table' => Link::table()
+        ]);
+
+        $database->drop(Link::table());
+
+        $database->create(Link::table(), [
+            'key' => [
+                'VARCHAR',
+                'NOT NULL',
+                'PRIMARY KEY'
+            ],
+            'uri' => [
+                'TEXT',
+                'NOT NULL',
+                'REFERENCES ' . Account::table() . '(id) ON DELETE SET NULL ON UPDATE CASCADE'
+            ],
+            'expires_at' => [
+                'DATETIME',
+                'NULL'
+            ],
+            'created_at' => [
+                'DATETIME',
+                'NOT NULL'
+            ],
+            'created_by_id' => [
+                'VARCHAR',
+                'NOT NULL',
+                'REFERENCES ' . Account::table() . '(id) ON DELETE SET NULL ON UPDATE CASCADE'
+            ],
+            'updated_at' => [
+                'DATETIME',
+                'NOT NULL'
+            ],
+            'updated_by_id' => [
                 'VARCHAR',
                 'NOT NULL',
                 'REFERENCES ' . Account::table() . '(id) ON DELETE SET NULL ON UPDATE CASCADE'

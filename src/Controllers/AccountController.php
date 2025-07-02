@@ -589,6 +589,12 @@ class AccountController
 
 
 
+    /**
+     * Handles the request to retrieve tokens for a specific account.
+     * @param string $account_id The ID of the account to retrieve tokens for.
+     * @param mixed $token_id The ID of the token to retrieve, or 'current' for the last used token.
+     * @return never
+     */
     public function tokens(string $account_id, ?string $token_id = null): never
     {
         // If the account ID is 'me', get the currently authenticated account

@@ -9,6 +9,12 @@ use Miakiwi\Kwlnk\Exceptions\ModelLoadException;
 abstract class Model implements IModel
 {
     /**
+     * The database table column used as the unique identifier for the model.
+     * @var string
+     */
+    protected static string $db_id_column = 'id';
+
+    /**
      * The name of the table associated with the model.
      * @var string
      */
@@ -28,7 +34,7 @@ abstract class Model implements IModel
     public static function all(): array
     {
         Logger::get()->debug("Fetching all records", [
-            'table' => static::table()
+            'table' => self::table()
         ]);
 
 
@@ -39,7 +45,7 @@ abstract class Model implements IModel
 
 
         // Fetch all records from the table.
-        $records = $database->select(static::table(), '*');
+        $records = $database->select(self::table(), '*');
 
 
 
@@ -54,7 +60,7 @@ abstract class Model implements IModel
             } catch (ModelLoadException $e) {
 
                 Logger::get()->error("Failed to load record.", [
-                    'table' => static::table(),
+                    'table' => self::table(),
                     'record' => $record,
                     'error' => $e->getMessage()
                 ]);
@@ -62,7 +68,7 @@ abstract class Model implements IModel
             } catch (\Exception $e) {
 
                 Logger::get()->error("Error loading record.", [
-                    'table' => static::table(),
+                    'table' => self::table(),
                     'record' => $record,
                     'error' => $e->getMessage()
                 ]);
@@ -83,11 +89,11 @@ abstract class Model implements IModel
      * @param string $id The ID of the item to retrieve.
      * @return static|null Returns the item if found, null otherwise.
      */
-    public static function find(string $id, string $id_column = 'id'): ?self
+    public static function find(string $id): ?self
     {
         Logger::get()->debug("Fetching record.", [
-            'table' => static::table(),
-            'id_column' => $id_column,
+            'table' => self::table(),
+            'id_column' => self::$db_id_column,
             'id' => $id
         ]);
 
@@ -101,15 +107,15 @@ abstract class Model implements IModel
         // Fetch the record from the table.
         try {
 
-            return static::load($database->get(static::table(), '*', [
-                $id_column => $id
+            return static::load($database->get(self::table(), '*', [
+                self::$db_id_column => $id
             ]) ?? []);
 
         } catch (ModelLoadException $e) {
 
             Logger::get()->error("Failed to load record.", [
-                'table' => static::table(),
-                'id_column' => $id_column,
+                'table' => self::table(),
+                'id_column' => self::$db_id_column,
                 'id' => $id,
                 'error' => $e->getMessage()
             ]);
@@ -119,8 +125,8 @@ abstract class Model implements IModel
         } catch (\Exception $e) {
 
             Logger::get()->error("Error fetching record.", [
-                'table' => static::table(),
-                'id_column' => $id_column,
+                'table' => self::table(),
+                'id_column' => self::$db_id_column,
                 'id' => $id,
                 'error' => $e->getMessage()
             ]);

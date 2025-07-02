@@ -202,7 +202,7 @@ class Token extends Model implements IData
 
 
         // Fetch all tokens associated with the account ID.
-        $records = $database->select(static::table(), '*', [
+        $records = $database->select(self::table(), '*', [
             'account_id' => $accountId
         ]);
 
@@ -257,7 +257,7 @@ class Token extends Model implements IData
      * Instantiate the object from an array of data.
      * @param array $data An associative array containing the data to populate the object.
      * @throws \Miakiwi\Kwlnk\Exceptions\ModelLoadException If the data is invalid or missing required fields.
-     * @return void
+     * @return self The instantiated object.
      */
     public static function load(array $data): self
     {
@@ -270,7 +270,7 @@ class Token extends Model implements IData
         ]);
 
         if ($validation->fails()) {
-            throw new ModelLoadException(static::table(), "Invalid data provided for '" . static::table() . "' model: " . implode(', ', $validation->errors()->all()));
+            throw new ModelLoadException(self::table(), "Invalid data provided for '" . self::table() . "' model: " . implode(', ', $validation->errors()->all()));
         }
 
 
@@ -294,7 +294,7 @@ class Token extends Model implements IData
 
 
         Logger::get()->debug("Loaded token from data.", [
-            'table' => static::table(),
+            'table' => self::table(),
             'token' => $object,
             'type' => get_class($object),
             'id' => $object->getId(),
@@ -315,7 +315,7 @@ class Token extends Model implements IData
     public function save(array $options = []): void
     {
         Logger::get()->debug("Saving token to database.", [
-            'table' => static::table()
+            'table' => self::table()
         ]);
 
 
@@ -330,7 +330,7 @@ class Token extends Model implements IData
             'id' => $this->getId(),
             'account_id' => $this->getAccountId(),
             'expires_at' => $this->getExpiresAt()->format('Y-m-d H:i:s'),
-            'last_used_at' => $this->getLastUsedAt()?->format('Y-m-d H:i:s') ?? null,
+            'last_used_at' => $this->getLastUsedAt()?->format('Y-m-d H:i:s'),
             'created_at' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
             'created_by_id' => $this->getCreatorId()
         ];
@@ -351,7 +351,7 @@ class Token extends Model implements IData
 
             try {
 
-                $database->update(static::table(), $data, [
+                $database->update(self::table(), $data, [
                     'id' => $this->getId()
                 ]);
 
@@ -375,7 +375,7 @@ class Token extends Model implements IData
 
             try {
 
-                $database->insert(static::table(), $data, $this->getId());
+                $database->insert(self::table(), $data, $this->getId());
 
             } catch (\Exception $e) {
 
@@ -401,7 +401,7 @@ class Token extends Model implements IData
     public function delete(array $options = []): void
     {
         Logger::get()->debug("Deleting token from database.", [
-            'table' => static::table(),
+            'table' => self::table(),
             'id' => $this->getId(),
         ]);
 
@@ -413,7 +413,7 @@ class Token extends Model implements IData
 
 
         try {
-            $database->delete(static::table(), [
+            $database->delete(self::table(), [
                 'id' => $this->getId()
             ]);
 

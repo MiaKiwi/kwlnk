@@ -20,6 +20,8 @@ class Account extends Model implements IData
 
 
 
+    protected static string $db_id_column = 'key';
+
     /**
      * The unique identifier for the account.
      * @var string
@@ -173,6 +175,24 @@ class Account extends Model implements IData
 
 
 
+    public function getLinks(): array
+    {
+        // Fetch all links associated with this account from the database.
+        $links = Link::findFromAccount($this->getId());
+
+        Logger::get()->debug("Retrieved links for account.", [
+            'account_id' => $this->getId(),
+            'link_count' => count($links),
+            'links' => $links
+        ]);
+
+
+
+        return $links;
+    }
+
+
+
     /**
      * Get all tokens associated with this account.
      * @return \Miakiwi\Kwlnk\Models\Token[] An array of Token objects associated with this account.
@@ -222,7 +242,7 @@ class Account extends Model implements IData
      * Instantiate the object from an array of data.
      * @param array $data An associative array containing the data to populate the object.
      * @throws \Miakiwi\Kwlnk\Exceptions\ModelLoadException If the data is invalid or missing required fields.
-     * @return void
+     * @return self The instantiated object.
      */
     public static function load(array $data): self
     {
@@ -234,7 +254,7 @@ class Account extends Model implements IData
         ]);
 
         if ($validation->fails()) {
-            throw new ModelLoadException(static::table(), "Invalid data provided for '" . static::table() . "' model: " . implode(', ', $validation->errors()->all()));
+            throw new ModelLoadException(self::table(), "Invalid data provided for '" . self::table() . "' model: " . implode(', ', $validation->errors()->all()));
         }
 
 
@@ -259,7 +279,7 @@ class Account extends Model implements IData
 
 
         Logger::get()->debug("Loaded account from data.", [
-            'table' => static::table(),
+            'table' => self::table(),
             'id' => $object->getId()
         ]);
 
@@ -278,7 +298,7 @@ class Account extends Model implements IData
     public function save(array $options = []): void
     {
         Logger::get()->debug("Saving account to database.", [
-            'table' => static::table(),
+            'table' => self::table(),
             'id' => $this->getId(),
         ]);
 
@@ -318,7 +338,7 @@ class Account extends Model implements IData
 
             try {
 
-                $database->update(static::table(), $data, [
+                $database->update(self::table(), $data, [
                     'id' => $this->getId()
                 ]);
 
@@ -342,7 +362,7 @@ class Account extends Model implements IData
 
             try {
 
-                $database->insert(static::table(), $data);
+                $database->insert(self::table(), $data);
 
             } catch (\Exception $e) {
 
@@ -368,7 +388,7 @@ class Account extends Model implements IData
     public function delete(array $options = []): void
     {
         Logger::get()->debug("Deleting account from database.", [
-            'table' => static::table(),
+            'table' => self::table(),
             'id' => $this->getId(),
         ]);
 
@@ -386,7 +406,7 @@ class Account extends Model implements IData
 
 
         try {
-            $database->delete(static::table(), [
+            $database->delete(self::table(), [
                 'id' => $this->getId()
             ]);
 

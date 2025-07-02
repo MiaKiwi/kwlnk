@@ -12,10 +12,18 @@ use MiaKiwi\Kaphpir\Responses\v25_1_0\Response;
 use MiaKiwi\Kaphpir\ResponseSerializer\JsonSerializer;
 use MiaKiwi\Kaphpir\Settings\DefaultSettings;
 use Miakiwi\Kwlnk\Controllers\AccountController;
+use Miakiwi\Kwlnk\Controllers\LinkController;
 use Miakiwi\Kwlnk\Middlewares\Auth;
-use Miakiwi\Kwlnk\Models\Account;
 use Pecee\Http\Request;
 use Pecee\SimpleRouter\SimpleRouter;
+
+
+
+if (!isset($_ENV['LOG_LEVEL']) || $_ENV['LOG_LEVEL'] !== 'debug') {
+    // Hide all errors and warnings
+    error_reporting(0);
+    ini_set('display_errors', '0');
+}
 
 
 
@@ -47,27 +55,28 @@ SimpleRouter::group(
         'middleware' => [Auth::class]
     ],
     function () {
+        // Fetch all users
         SimpleRouter::get(
             $_ENV['API_ROOT'] . 'users',
             [AccountController::class, 'index']
         );
 
 
-
+        // Fetch a specific user by ID
         SimpleRouter::get(
             $_ENV['API_ROOT'] . 'users/{id}',
             [AccountController::class, 'show']
         );
 
 
-
+        // Create a new user
         SimpleRouter::post(
             $_ENV['API_ROOT'] . 'users',
             [AccountController::class, 'store']
         );
 
 
-
+        // Update an existing user
         SimpleRouter::put(
             $_ENV['API_ROOT'] . 'users/{id}',
             [AccountController::class, 'update']
@@ -79,14 +88,14 @@ SimpleRouter::group(
         );
 
 
-
+        // Delete a user
         SimpleRouter::delete(
             $_ENV['API_ROOT'] . 'users/{id}',
             [AccountController::class, 'destroy']
         );
 
 
-
+        // Fetch the tokens of a user
         SimpleRouter::get(
             $_ENV['API_ROOT'] . 'users/{user_id}/tokens/{token_id?}',
             [AccountController::class, 'tokens']
@@ -107,6 +116,60 @@ SimpleRouter::get(
     [AccountController::class, 'logout']
 )->addMiddleware(Auth::class);
 
+
+
+// ----- Links ----- \\
+SimpleRouter::group(
+    [
+        'middleware' => [Auth::class]
+    ],
+    function () {
+        // Fetch all links
+        SimpleRouter::get(
+            $_ENV['API_ROOT'] . 'links',
+            [LinkController::class, 'index']
+        );
+
+
+        // Fetch a specific link by key
+        SimpleRouter::get(
+            $_ENV['API_ROOT'] . 'links/{key}',
+            [LinkController::class, 'show']
+        );
+
+
+        // Create a new link
+        SimpleRouter::post(
+            $_ENV['API_ROOT'] . 'links',
+            [LinkController::class, 'store']
+        );
+
+
+        // Update an existing link
+        SimpleRouter::put(
+            $_ENV['API_ROOT'] . 'links/{key}',
+            [LinkController::class, 'update']
+        );
+
+        SimpleRouter::patch(
+            $_ENV['API_ROOT'] . 'links/{key}',
+            [LinkController::class, 'update']
+        );
+
+
+        // Delete a link
+        SimpleRouter::delete(
+            $_ENV['API_ROOT'] . '/{key}',
+            [LinkController::class, 'destroy']
+        );
+    }
+);
+
+// Redirect to the URI of a link
+SimpleRouter::get(
+    $_ENV['LINKS_ROOT'] . '{key}',
+    [LinkController::class, 'redirect']
+);
 
 
 // ----- Setup ----- \\
@@ -185,6 +248,16 @@ SimpleRouter::error(function (Request $request, \Exception $exception) {
             $message = 'An internal error occurred.';
             break;
     }
+
+    Logger::get()->error("Routing error", [
+        'exception' => [
+            'code' => $exception->getCode(),
+            'message' => $exception->getMessage(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'trace' => $exception->getTraceAsString()
+        ]
+    ]);
 
     HttpApiResponse::send(
         JsonSerializer::getInstance(),
