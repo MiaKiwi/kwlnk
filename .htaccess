@@ -1,13 +1,3 @@
-RewriteEngine On
-RewriteBase /
-
-
-
-# Redirect everything except existing files and directories to index.php
-RewriteCond %{SCRIPT_FILENAME} !-f
-RewriteCond %{SCRIPT_FILENAME} !-d
-RewriteCond %{SCRIPT_FILENAME} !-l
-
-
-
-RewriteRule ^(.*)$ index.php/$1
+# Deny access to all
+order deny,allow
+deny from all
