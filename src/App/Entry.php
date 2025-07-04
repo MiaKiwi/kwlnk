@@ -46,10 +46,6 @@ foreach ($KaphpirSettings as $key => $value) {
 
 
 
-SecurityContext::Auth('default_administrator', 'kiwis are birds but also fruits and people for some reason?');
-
-
-
 // ----- Accounts ----- \\
 SimpleRouter::group(
     [

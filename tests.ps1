@@ -223,9 +223,9 @@ Set-Var 'AdminToken' (Test-KapirApi -Message "Login with valid credentials" -End
 
 Test-KapirApi -Message "Get current account (logged in)" -Endpoint "users/me" -Method GET -Headers @{ Authorization = "Bearer $(Get-Var 'AdminToken')" } -Expected @{ status = 'success' } -Void
 
-Set-Var 'CurrentAdminTokenId' (Test-KapirApi -Message "Get all tokens" -Endpoint "users/me/tokens/current" -Method GET -Headers @{ Authorization = "Bearer $(Get-Var 'AdminToken')" } -Expected @{ status = 'success' } -Fatal).Data.Id
+Set-Var 'CurrentAdminTokenId' (Test-KapirApi -Message "Get the current token" -Endpoint "users/me/tokens/current" -Method GET -Headers @{ Authorization = "Bearer $(Get-Var 'AdminToken')" } -Expected @{ status = 'success' } -Fatal).Data.Id
 
-Test-KapirApi -Message "Get the current token" -Endpoint "users/me/tokens/$(Get-Var 'CurrentAdminTokenId')" -Method GET -Headers @{ Authorization = "Bearer $(Get-Var 'AdminToken')" } -Expected @{ status = 'success' } -Void
+Test-KapirApi -Message "Get all tokens" -Endpoint "users/me/tokens/$(Get-Var 'CurrentAdminTokenId')" -Method GET -Headers @{ Authorization = "Bearer $(Get-Var 'AdminToken')" } -Expected @{ status = 'success' } -Void
 
 Set-Var 'AccountA' (Test-KapirApi -Message "Create AccountA" -Endpoint "users" -Method POST -Headers @{ Authorization = "Bearer $(Get-Var 'AdminToken')" } -Body @{ id = 'AccountA'; password = 'password'; } -Expected @{ status = 'success'; error = $null } -Fatal).Data
 
@@ -263,9 +263,9 @@ Test-KapirApi -Message "Redirect to the expired link" -Endpoint "$(Get-Var 'Pres
 
 Test-KapirApi -Message "Delete the expired link" -Endpoint "links/$((Get-Var 'PresetKeyLink').Key)" -Method DELETE -Headers @{ Authorization = "Bearer $(Get-Var 'AdminToken')" } -Expected @{ status = 'success'; error = $null } -Void
 
-Set-Var 'RandomKeyLink' (Test-KapirApi -Message "" -Endpoint "links" -Method POST -Headers @{ Authorization = "Bearer $(Get-Var 'AdminToken')" } -Body @{ uri = 'https://mia.kiwi'; } -Expected @{ status = 'success'; error = $null } -Fatal).Data
+Set-Var 'RandomKeyLink' (Test-KapirApi -Message "Create a link with a random key (logged in)" -Endpoint "links" -Method POST -Headers @{ Authorization = "Bearer $(Get-Var 'AdminToken')" } -Body @{ uri = 'https://mia.kiwi'; } -Expected @{ status = 'success'; error = $null } -Fatal).Data
 
-Test-KapirApi -Message "Create a link with a random key (logged in)" -Endpoint "$((Get-Var 'RandomKeyLink').Key)" -Url $WebRoot -Method GET -Expected @{ status = $null } -Void
+Test-KapirApi -Message "Test random link" -Endpoint "$((Get-Var 'RandomKeyLink').Key)" -Url $WebRoot -Method GET -Expected @{ status = $null } -Void
 
 
 

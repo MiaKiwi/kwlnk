@@ -10,6 +10,7 @@ use Miakiwi\Kwlnk\App\Logger;
 use Miakiwi\Kwlnk\App\Model;
 use Miakiwi\Kwlnk\App\SecurityContext;
 use Miakiwi\Kwlnk\Exceptions\ModelLoadException;
+use Miakiwi\Kwlnk\Exceptions\NotAuthenticatedException;
 use Rakit\Validation\Validator;
 
 
@@ -53,13 +54,20 @@ class Link extends Model implements IData
         $this->expires_at = $expires_at;
         $this->uri = $uri;
 
+        // Get the current account ID
+        try {
+            $accountId = SecurityContext::Id();
+        } catch (NotAuthenticatedException $e) {
+            $accountId = 'public'; // Default to 'public' if not authenticated
+        }
+
         // Set the creation and update timestamps
         $this->setCreatedAt();
         $this->setUpdatedAt();
 
         // Set the creator and updater IDs
-        $this->setCreatorId(SecurityContext::Account());
-        $this->setUpdaterId(SecurityContext::Account());
+        $this->setCreatorId($accountId);
+        $this->setUpdaterId($accountId);
     }
 
 
@@ -199,13 +207,22 @@ class Link extends Model implements IData
 
 
 
+        // Get the current account ID
+        try {
+            $accountId = SecurityContext::Id();
+        } catch (NotAuthenticatedException $e) {
+            $accountId = $data['account_id'] ?? null;
+        }
+
+
+
         // Set the creation and update timestamps if they are present in the data
         $object->setCreatedAt(isset($data['created_at']) ? new \DateTime($data['created_at']) : null);
         $object->setUpdatedAt(isset($data['updated_at']) ? new \DateTime($data['updated_at']) : null);
 
         // Set the creator and updater IDs if they exist in the data
-        $object->setCreatorId($data['created_by_id'] ?? SecurityContext::Id() ?? $data['id']);
-        $object->setUpdaterId($data['updated_by_id'] ?? SecurityContext::Id() ?? $data['id']);
+        $object->setCreatorId($data['created_by_id'] ?? $accountId ?? $data['id']);
+        $object->setUpdaterId($data['updated_by_id'] ?? $accountId ?? $data['id']);
 
 
 
