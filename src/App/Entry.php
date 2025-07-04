@@ -19,6 +19,7 @@ use Pecee\SimpleRouter\SimpleRouter;
 
 
 
+// Set the error reporting level based on the LOG_LEVEL environment variable
 if (!isset($_ENV['LOG_LEVEL']) || $_ENV['LOG_LEVEL'] !== 'debug') {
     // Hide all errors and warnings
     error_reporting(0);
@@ -159,7 +160,7 @@ SimpleRouter::group(
 
         // Delete a link
         SimpleRouter::delete(
-            $_ENV['API_ROOT'] . '/{key}',
+            $_ENV['API_ROOT'] . 'links/{key}',
             [LinkController::class, 'destroy']
         );
     }
@@ -169,31 +170,6 @@ SimpleRouter::group(
 SimpleRouter::get(
     $_ENV['LINKS_ROOT'] . '{key}',
     [LinkController::class, 'redirect']
-);
-
-
-// ----- Setup ----- \\
-SimpleRouter::get(
-    $_ENV['API_ROOT'] . 'setup',
-    function () {
-        try {
-
-            Database::setup();
-
-            HttpApiResponse::send(
-                JsonSerializer::getInstance(),
-                (new Response())->message('Setup completed successfully.')
-            );
-
-        } catch (\Exception $e) {
-            Logger::get()->error("Error during setup", ['exception' => $e]);
-
-            HttpApiResponse::send(
-                JsonSerializer::getInstance(),
-                (new Response())->error(new InternalServerError('Setup failed.'))->message($e->getMessage())
-            );
-        }
-    }
 );
 
 

@@ -18,10 +18,6 @@ class Account extends Model implements IData
 {
     use HasUpdateTracker, HasCreationTracker;
 
-
-
-    protected static string $db_id_column = 'key';
-
     /**
      * The unique identifier for the account.
      * @var string
@@ -254,7 +250,7 @@ class Account extends Model implements IData
         ]);
 
         if ($validation->fails()) {
-            throw new ModelLoadException(self::table(), "Invalid data provided for '" . self::table() . "' model: " . implode(', ', $validation->errors()->all()));
+            throw new ModelLoadException(static::table(), "Invalid data provided for '" . static::table() . "' model: " . implode(', ', $validation->errors()->all()));
         }
 
 
@@ -279,7 +275,7 @@ class Account extends Model implements IData
 
 
         Logger::get()->debug("Loaded account from data.", [
-            'table' => self::table(),
+            'table' => static::table(),
             'id' => $object->getId()
         ]);
 
@@ -298,7 +294,7 @@ class Account extends Model implements IData
     public function save(array $options = []): void
     {
         Logger::get()->debug("Saving account to database.", [
-            'table' => self::table(),
+            'table' => static::table(),
             'id' => $this->getId(),
         ]);
 
@@ -338,7 +334,7 @@ class Account extends Model implements IData
 
             try {
 
-                $database->update(self::table(), $data, [
+                $database->update(static::table(), $data, [
                     'id' => $this->getId()
                 ]);
 
@@ -362,7 +358,7 @@ class Account extends Model implements IData
 
             try {
 
-                $database->insert(self::table(), $data);
+                $database->insert(static::table(), $data);
 
             } catch (\Exception $e) {
 
@@ -388,7 +384,7 @@ class Account extends Model implements IData
     public function delete(array $options = []): void
     {
         Logger::get()->debug("Deleting account from database.", [
-            'table' => self::table(),
+            'table' => static::table(),
             'id' => $this->getId(),
         ]);
 
@@ -406,7 +402,7 @@ class Account extends Model implements IData
 
 
         try {
-            $database->delete(self::table(), [
+            $database->delete(static::table(), [
                 'id' => $this->getId()
             ]);
 

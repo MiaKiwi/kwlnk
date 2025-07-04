@@ -202,7 +202,7 @@ class Token extends Model implements IData
 
 
         // Fetch all tokens associated with the account ID.
-        $records = $database->select(self::table(), '*', [
+        $records = $database->select(static::table(), '*', [
             'account_id' => $accountId
         ]);
 
@@ -270,7 +270,7 @@ class Token extends Model implements IData
         ]);
 
         if ($validation->fails()) {
-            throw new ModelLoadException(self::table(), "Invalid data provided for '" . self::table() . "' model: " . implode(', ', $validation->errors()->all()));
+            throw new ModelLoadException(static::table(), "Invalid data provided for '" . static::table() . "' model: " . implode(', ', $validation->errors()->all()));
         }
 
 
@@ -294,7 +294,7 @@ class Token extends Model implements IData
 
 
         Logger::get()->debug("Loaded token from data.", [
-            'table' => self::table(),
+            'table' => static::table(),
             'token' => $object,
             'type' => get_class($object),
             'id' => $object->getId(),
@@ -315,7 +315,7 @@ class Token extends Model implements IData
     public function save(array $options = []): void
     {
         Logger::get()->debug("Saving token to database.", [
-            'table' => self::table()
+            'table' => static::table()
         ]);
 
 
@@ -351,7 +351,7 @@ class Token extends Model implements IData
 
             try {
 
-                $database->update(self::table(), $data, [
+                $database->update(static::table(), $data, [
                     'id' => $this->getId()
                 ]);
 
@@ -375,7 +375,7 @@ class Token extends Model implements IData
 
             try {
 
-                $database->insert(self::table(), $data, $this->getId());
+                $database->insert(static::table(), $data, $this->getId());
 
             } catch (\Exception $e) {
 
@@ -401,7 +401,7 @@ class Token extends Model implements IData
     public function delete(array $options = []): void
     {
         Logger::get()->debug("Deleting token from database.", [
-            'table' => self::table(),
+            'table' => static::table(),
             'id' => $this->getId(),
         ]);
 
@@ -413,7 +413,7 @@ class Token extends Model implements IData
 
 
         try {
-            $database->delete(self::table(), [
+            $database->delete(static::table(), [
                 'id' => $this->getId()
             ]);
 

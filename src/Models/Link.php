@@ -18,6 +18,8 @@ class Link extends Model implements IData
 {
     use HasUpdateTracker, HasCreationTracker;
 
+    protected static string $db_id_column = 'key';
+
     /**
      * The unique key identifier for the link.
      * @var string
@@ -82,11 +84,15 @@ class Link extends Model implements IData
 
     /**
      * Sets the expiry date for the link.
-     * @param mixed $expires_at The time when the link expires. If null, the link does not expire.
+     * @param null|\DateTime|string $expires_at The time when the link expires. If null, the link does not expire.
      * @return void
      */
-    public function setExpiryDate(?\DateTime $expires_at): void
+    public function setExpiryDate(null|\DateTime|string $expires_at): void
     {
+        if (is_string($expires_at)) {
+            $expires_at = new \DateTime($expires_at);
+        }
+
         $this->expires_at = $expires_at;
     }
 
@@ -179,7 +185,7 @@ class Link extends Model implements IData
         ]);
 
         if ($validation->fails()) {
-            throw new ModelLoadException(self::table(), "Invalid data provided for '" . self::table() . "' model: " . implode(', ', $validation->errors()->all()));
+            throw new ModelLoadException(static::table(), "Invalid data provided for '" . static::table() . "' model: " . implode(', ', $validation->errors()->all()));
         }
 
 
@@ -204,7 +210,7 @@ class Link extends Model implements IData
 
 
         Logger::get()->debug("Loaded link from data.", [
-            'table' => self::table(),
+            'table' => static::table(),
             'key' => $object->getKey()
         ]);
 
@@ -239,7 +245,7 @@ class Link extends Model implements IData
 
 
         // Fetch all links associated with the account ID.
-        $records = $database->select(self::table(), '*', [
+        $records = $database->select(static::table(), '*', [
             'created_by_id' => $accountId
         ]);
 
@@ -298,7 +304,7 @@ class Link extends Model implements IData
     public function save(array $options = []): void
     {
         Logger::get()->debug("Saving link to database.", [
-            'table' => self::table(),
+            'table' => static::table(),
             'key' => $this->getKey(),
         ]);
 
@@ -338,7 +344,7 @@ class Link extends Model implements IData
 
             try {
 
-                $database->update(self::table(), $data, [
+                $database->update(static::table(), $data, [
                     'key' => $this->getKey()
                 ]);
 
@@ -362,7 +368,7 @@ class Link extends Model implements IData
 
             try {
 
-                $database->insert(self::table(), $data);
+                $database->insert(static::table(), $data);
 
             } catch (\Exception $e) {
 
@@ -388,7 +394,7 @@ class Link extends Model implements IData
     public function delete(array $options = []): void
     {
         Logger::get()->debug("Deleting link from database.", [
-            'table' => self::table(),
+            'table' => static::table(),
             'key' => $this->getKey(),
         ]);
 
@@ -406,7 +412,7 @@ class Link extends Model implements IData
 
 
         try {
-            $database->delete(self::table(), [
+            $database->delete(static::table(), [
                 'key' => $this->getKey()
             ]);
 
